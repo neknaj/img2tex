@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>image</title>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <div>
+        <h1>image</h1>
+        <div>
+            <button onclick="selectfile()" id="selectimg">select</button><br>
+            <img id="checkinputed">
+        </div>
+        <div>
+            <button onclick="run()">run</button><br>
+            <img id="output">
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+
+    function selectfile() {     //when select file
+        ifelm = document.createElement("input");
+        ifelm.type = "file";
+        ifelm.onchange = function () { fileChanged(this) };
+        ifelm.click();
+    }
+
+    function fileChanged(input) {
+        for (let i = 0; i < input.files.length; i++) {
+            var reader = new FileReader();
+            reader.onload = function (data) {
+                document.getElementById("checkinputed").src = data.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function run() {
+        let img = document.createElement("img");
+        img.src = document.getElementById("checkinputed").src
+        img.onload = () => {
+            iarr = getimg(img);
+            maketable(iarr, iarr.width, iarr.height)
+        }
+
+    }
+
+    function getimg(img) {
+        let canvas = document.createElement("canvas");
+        canvas.height = img.naturalHeight;
+        canvas.width = img.naturalWidth;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        return ctx.getImageData(0, 0, img.naturalWidth, img.naturalHeight);
+    }
+
+    function maketable(iarr, x, y) {
+        let iarrd = iarr.data;
+        let riarr = Array(x * y * 4);
+        let latex = ""
+        for (let iy = 0; iy < y; iy++) {
+            for (let ix = 0; ix < x; ix++) {
+                idx = (iy * x + ix) * 4;
+                riarr[idx + 0] = ("00" + iarrd[idx + 0].toString(16)).slice(-2);
+                riarr[idx + 1] = ("00" + iarrd[idx + 1].toString(16)).slice(-2);
+                riarr[idx + 2] = ("00" + iarrd[idx + 2].toString(16)).slice(-2);
+                latex += "\textcolor{#" + riarr[idx + 0] + riarr[idx + 1] + riarr[idx + 2] + "}{\rule{5pt}{5pt}}"
+                if (ix == x - 1) {
+                    latex += "\\[-7.25pt]"
+                }
+            }
+        }
+        let co = document.createElement("canvas");
+        co.height = y;
+        co.width = x;
+        co.getContext('2d').putImageData(new ImageData(riarr, x, y), 0, 0);
+        return co.toDataURL('image/png');
+    }
+</script>
+<style>
+    #checkinputed,
+    #output {
+        max-width: 50%;
+        max-height: 50vh;
+    }
+</style>
