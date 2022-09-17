@@ -15,7 +15,9 @@
         </div>
         <div>
             <button onclick="run()">run</button><br>
-            <img id="output">
+            <div id="output">
+
+            </div>
         </div>
     </div>
 </body>
@@ -75,11 +77,7 @@
                 }
             }
         }
-        let co = document.createElement("canvas");
-        co.height = y;
-        co.width = x;
-        co.getContext('2d').putImageData(new ImageData(riarr, x, y), 0, 0);
-        return co.toDataURL('image/png');
+        document.getElementById("output").innerHTML = latex
     }
 </script>
 <style>
